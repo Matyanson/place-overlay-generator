@@ -1,6 +1,13 @@
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+export const canvasToBlob = (canvas: HTMLCanvasElement): Promise<Blob> => {
+    return new Promise((resolve) => {
+        const blobCallback = (b: Blob | null) => resolve(b)
+        canvas.toBlob(blobCallback); // implied image/png format
+    });
+}
+
 export const saveFile = (fileName: string, blobParts: BlobPart[], mimeType: string) => {
     let blob = new Blob(blobParts, {type: mimeType});
     let link = document.createElement('a');
@@ -46,14 +53,14 @@ export const readFileUrl = (blob: Blob | File): Promise<string> => {
     });
 }
 
-export const getImageData = (path: string, ctx: CanvasRenderingContext2D = null, scaleX = 1, scaleY = 1): Promise<ImageData> => {
+export const getImageData = (path: string, ctx: CanvasRenderingContext2D = null, newWidth = null, newHeight = null): Promise<ImageData> => {
     
     return new Promise((resolve, reject) => {
         let img = new Image();
         img.src = path;
         img.addEventListener('load', async function() {
-            const width = img.width * scaleX;
-            const height = img.height * scaleY;
+            const width = newWidth ?? img.width;
+            const height = newHeight ?? img.height;
             if(ctx == null){
                 const canvas = document.createElement('canvas');
                 canvas.width = width;
