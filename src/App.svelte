@@ -84,8 +84,8 @@ import { canvasToBlob, drawImage, getFileText, getImageData, loadFile, readFileU
 		}
 
 		// download as img
-		// const blob = await canvasToBlob(canvas);
-		// saveFile('layout.png', [blob], 'image/png');
+		const blob = await canvasToBlob(canvas);
+		saveFile('layout.png', [blob], 'image/png');
 	}
 
 	const getPixelIndex = (width: number, x: number, y: number): number => {
@@ -109,6 +109,7 @@ import { canvasToBlob, drawImage, getFileText, getImageData, loadFile, readFileU
 	<input type="number" bind:value={rows} /> Rows: {rows}
 	<canvas bind:this={canvas}></canvas>
 	<button on:click={createLayout}>generate layout</button><br>
+	(if nothing happens)
 	right click the canvas > save as
 </main>
 
