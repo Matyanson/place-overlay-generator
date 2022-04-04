@@ -1,28 +1,15 @@
 <script lang="ts">
 import { onMount } from "svelte";
-import { getFileText, getImageData, loadFile, saveFile } from "./helper";
+import { drawImage, getFileText, getImageData, loadFile, readFileUrl, saveFile } from "./helper";
 
 	type Coords = { x: number, y: number };
 
 	let canvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D;
-	let iWidth = 0;
-	let iHeight = 0;
+	let cWidth = 0;
+	let cHeight = 0;
 
-	let i = $gridDataList.length - 1;
-	let m: Coords = { x: 0, y: 0 };
-	let point1: Coords;
-	let point2: Coords;
-
-	$: {
-		if(canvas){
-			(async () => {
-				await drawImg(i);
-				drawGrid($gridDataList[i]);
-			})();
-		}
-	}
-
+	let imgUrl = null;
 
 	onMount(async () => {
 		ctx = canvas.getContext('2d');
@@ -30,20 +17,16 @@ import { getFileText, getImageData, loadFile, saveFile } from "./helper";
 
 	
 
-	const downloadData = () => {
-		const jsonString = JSON.stringify($gridDataList);
-		saveFile('grid_data.json', [jsonString], 'text/json');
-	}
-
 	const loadData = async () => {
-		const file = await loadFile();
-		const text = await getFileText(file);
-		const obj = JSON.parse(text);
-		$gridDataList = obj;
+		const file = await loadFile('image/*');
+		const url = await readFileUrl(file);
+		imgUrl = url;
+		await drawImage(url, ctx, canvas);
 	}
 </script>
 
 <main>
+	<button on:click={loadData} >load Image</button>
 	<canvas bind:this={canvas}></canvas>
 </main>
 
@@ -59,17 +42,9 @@ import { getFileText, getImageData, loadFile, saveFile } from "./helper";
 		padding: 1em;
 	}
 
-	h1 {
-		color: #ff3e00;
-		text-transform: uppercase;
-		font-size: 4em;
-		font-weight: 100;
-		margin: 0;
-	}
-
 	canvas {
-		/*width: 100%;*/
+		width: 100%;
 		user-select: none;
-		cursor: crosshair;
+		background-color: rgba(0, 0, 0, 0.423);
 	}
 </style>
