@@ -62,8 +62,8 @@ import { canvasToBlob, drawImage, getFileText, getImageData, loadFile, readFileU
 		ctx.clearRect(0, 0, canvas.width, canvas.height);
 
 		// get data
-		const columns = Math.floor(rows * (canvas.width / canvas.height));
 		const originalImgData = await getImageData(imgUrl);
+		const columns = Math.floor(rows * (originalImgData.width / originalImgData.height));
 		const pixels = originalImgData.data;
 		const diameter = originalImgData.height / rows;
 
@@ -82,6 +82,8 @@ import { canvasToBlob, drawImage, getFileText, getImageData, loadFile, readFileU
 				ctx.fillRect(layoutX, layoutY, 1, 1);
 			}
 		}
+
+		console.log(canvas.width, canvas.height);
 
 		// download as img
 		const blob = await canvasToBlob(canvas);
