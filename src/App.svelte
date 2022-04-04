@@ -10,6 +10,14 @@ import { drawImage, getFileText, getImageData, loadFile, readFileUrl, saveFile }
 	let cHeight = 0;
 
 	let imgUrl = null;
+	let rows = 20;
+	let canvasWidth = 2000;
+	let canvasHeight = 2000;
+
+	$: try {
+		rows;
+		redraw();
+	} catch(e){}
 
 	onMount(async () => {
 		ctx = canvas.getContext('2d');
@@ -21,12 +29,34 @@ import { drawImage, getFileText, getImageData, loadFile, readFileUrl, saveFile }
 		const file = await loadFile('image/*');
 		const url = await readFileUrl(file);
 		imgUrl = url;
-		await drawImage(url, ctx, canvas);
+
+		redraw();
+	}
+
+	
+
+	const drawPoints = (rows: number) => {
+		const diameter = canvas.height / rows;
+		const radius = diameter / 2;
+		const columns = Math.floor(rows * (canvas.width / canvas.height));
+
+		for(let i = 0; i < rows; i++) {
+			for(let j = 0; j < columns; j++) {
+				ctx.fillRect(diameter * j + radius / 2, diameter * i + radius / 2, radius, radius);
+			}
+		}
+	}
+	
+	const redraw = async () => {
+		await drawImage(imgUrl, ctx, canvas);
+		drawPoints(rows);
+	}
 	}
 </script>
 
 <main>
-	<button on:click={loadData} >load Image</button>
+	<button on:click={loadData} >load Image</button><br>
+	<input type="number" bind:value={rows} /> Rows: {rows}
 	<canvas bind:this={canvas}></canvas>
 </main>
 
